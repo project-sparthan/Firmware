@@ -84,13 +84,13 @@ void setup()
   delay(100);
   pinMode(RST, INPUT);
   delay(100);
-
-  
   pinMode (LED, OUTPUT);                            // Notification LED
   digitalWrite (LED, HIGH);                         // Turn ON
   delay(100);
-  sparthan.begin(3000000, SERIAL_8N1, 16, 17);
+  
+  sparthan.begin(3000000, SERIAL_8N1, 16, 17);      // Start sparthan communication
   delay(100);
+  
   Serial.begin(115200);                             // Start serial interface for debugging
   Serial.println ("Connecting...");
   myo.connect();                                    // Connect to the myo
@@ -99,19 +99,6 @@ void setup()
   myo.set_myo_mode(myohw_emg_mode_send_emg,         // EMG mode
                    myohw_imu_mode_none,             // IMU mode
                    myohw_classifier_mode_enabled);  // Classifier mode
-
-  if (myo.connected) {
-    myo.get_firmware();                             // Retrieve and print the firmware info
-    delay(100);
-    Serial.print("Firmware info: ");
-    Serial.print(myo.fw_major);
-    Serial.print(".");
-    Serial.print(myo.fw_minor);
-    Serial.print(".");
-    Serial.println(myo.fw_patch);
-    Serial.print("Color: ");
-    Serial.println(myo.fw_hardware_rev);
-  }
 
   myo.battery_notification(TURN_ON)->registerForNotify(batteryCallback);
   myo.gesture_notification(TURN_ON)->registerForNotify(gestureCallback);
