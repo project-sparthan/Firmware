@@ -62,3 +62,9 @@ dkms.conf
 *.DS_Store
 **/Icon?
 
+#GNU Global files
+STM32/GPATH
+
+STM32/GRTAGS
+
+STM32/GTAGS
