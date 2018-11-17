@@ -23,7 +23,7 @@ void OnProjectLoad (void) {
   // User settings
   //
   //Edit.SysVar (VAR_TARGET_POWER_ON, 1);
-  File.Open ("/build/SparthanV2MotionController.elf");
+  File.Open ("../build/SparthanV2MotionController.elf");
   Project.SetOSPlugin("FreeRTOSPlugin.dll");
 }
 
