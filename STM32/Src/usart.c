@@ -55,6 +55,11 @@
 
 /* USER CODE BEGIN 0 */
 
+#include <string.h>
+
+uint8_t uartRxBuffer[64];
+uint8_t uartTxBuffer[64];
+
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -67,7 +72,7 @@ void MX_USART1_UART_Init(void)
 {
 
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 3000000;
+  huart1.Init.BaudRate = 500000;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -178,6 +183,21 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 } 
 
 /* USER CODE BEGIN 1 */
+
+/* UART line idle detected, DMA UART receive operation has been stoped, restart now */
+void HAL_UART_AbortCpltCallback (UART_HandleTypeDef *huart) {
+
+  UART_DMA_STOP_AT_IDLE(*huart);
+  HAL_UART_Receive_DMA(huart, uartRxBuffer, sizeof(uartRxBuffer));
+
+}
+
+/* Arduino style serial print */
+void serialPrint(UART_HandleTypeDef *huart, char _out[]) {
+
+  HAL_UART_Transmit_DMA(huart, (uint8_t *) _out, strlen(_out));
+
+}
 
 /* USER CODE END 1 */
 

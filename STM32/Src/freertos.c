@@ -90,12 +90,16 @@ extern TIM_HandleTypeDef htim16;
 extern TIM_HandleTypeDef htim17;
 extern TIM_HandleTypeDef htim19;
 
-uint16_t encoderCount[5];
+extern UART_HandleTypeDef huart1;
+
+extern uint8_t uartBuffer[64];
+
+// uint16_t encoderCount[5];
 
 /* Single byte to store input */
-uint8_t byte;
-uint16_t dutyCycle[5] = {0,0,0,0,0};
-uint8_t direction = 0;
+// uint8_t byte;
+// uint16_t dutyCycle[5] = {0,0,0,0,0};
+// uint8_t direction = 0;
 
 
 /* USER CODE END Variables */
@@ -105,40 +109,42 @@ osThreadId defaultTaskHandle;
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* Debugginf functions for the UART */
-void debugPrint(UART_HandleTypeDef *huart, char _out[]){ 
-  HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
-}
-void debugPrintln(UART_HandleTypeDef *huart, char _out[]){
-       HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
-       char newline[2] = "\r\n";
-       HAL_UART_Transmit(huart, (uint8_t *) newline, 2, 10);
-}
+// void debugPrint(UART_HandleTypeDef *huart, char _out[]){ 
+//   HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
+// }
+// void debugPrintln(UART_HandleTypeDef *huart, char _out[]){
+//        HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
+//        char newline[2] = "\r\n";
+//        HAL_UART_Transmit(huart, (uint8_t *) newline, 2, 10);
+// }
 
-/* Set callback called by the HAL_UART_IRQHandler */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  if (huart->Instance == USART1)
-  {
-    /* Receive one byte in interrupt mode */ 
-    HAL_UART_Receive_IT(&huart1, &byte, 1);
-    if (byte == 's'){
-      for (int i = 0; i<5; i++) 
-        dutyCycle[i] = 65000;
-      direction = 1;
-    }
-    else if (byte == 'n'){
-      for (int i = 0; i<5; i++) 
-        dutyCycle[i] = 65000;   
-      direction = 0;
-      debugPrintln(&huart1, "OK");
-    }
-    else if (byte == 't'){
-      for (int i = 0; i<5; i++) 
-        dutyCycle[i] = 0;    
-      debugPrintln(&huart1, "OK");
-    }
-  }
-}
+// /* Set callback called by the HAL_UART_IRQHandler */
+// void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+// {
+//   if (huart->Instance == USART1)
+//   {
+//     /* Receive one byte in interrupt mode */ 
+//     HAL_UART_Receive_IT(&huart1, &byte, 1);
+//     if (byte == 's'){
+//       for (int i = 0; i<5; i++) 
+//         dutyCycle[i] = 65000;
+//       direction = 1;
+//     }
+//     else if (byte == 'n'){
+//       for (int i = 0; i<5; i++) 
+//         dutyCycle[i] = 65000;   
+//       direction = 0;
+//       debugPrintln(&huart1, "OK");
+//     }
+//     else if (byte == 't'){
+//       for (int i = 0; i<5; i++) 
+//         dutyCycle[i] = 0;    
+//       debugPrintln(&huart1, "OK");
+//     }
+//   }
+// }
+
+
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
@@ -194,8 +200,8 @@ void StartDefaultTask(void const * argument)
 
   /* USER CODE BEGIN StartDefaultTask */
 
-  /* Setup interrupt routine for USART communication */
-  HAL_UART_Receive_IT(&huart1, &byte, 1);
+  // /* Setup interrupt routine for USART communication */
+  // HAL_UART_Receive_IT(&huart1, &byte, 1);
 
   /* Initialize encoder and motors */
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
@@ -219,42 +225,46 @@ void StartDefaultTask(void const * argument)
   HAL_GPIO_WritePin(DIR4_GPIO_Port, DIR4_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(DIR5_GPIO_Port, DIR5_Pin, GPIO_PIN_SET);
 
+  UART_DMA_STOP_AT_IDLE(espUART);
+  HAL_UART_Receive_DMA(&espUART, uartRxBuffer, sizeof(uartRxBuffer));
+
   /* Infinite loop */
   for(;;)
   {
     
-    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-    HAL_GPIO_WritePin(DIR1_GPIO_Port, DIR1_Pin, direction);
-    HAL_GPIO_WritePin(DIR2_GPIO_Port, DIR2_Pin, direction);
-    HAL_GPIO_WritePin(DIR3_GPIO_Port, DIR3_Pin, direction);
-    HAL_GPIO_WritePin(DIR4_GPIO_Port, DIR4_Pin, direction);
-    HAL_GPIO_WritePin(DIR5_GPIO_Port, DIR5_Pin, direction);
+    // HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+    // HAL_GPIO_WritePin(DIR1_GPIO_Port, DIR1_Pin, direction);
+    // HAL_GPIO_WritePin(DIR2_GPIO_Port, DIR2_Pin, direction);
+    // HAL_GPIO_WritePin(DIR3_GPIO_Port, DIR3_Pin, direction);
+    // HAL_GPIO_WritePin(DIR4_GPIO_Port, DIR4_Pin, direction);
+    // HAL_GPIO_WritePin(DIR5_GPIO_Port, DIR5_Pin, direction);
 
-    __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, dutyCycle[0]);     //Motor 1
-    __HAL_TIM_SET_COMPARE(&htim17, TIM_CHANNEL_1, dutyCycle[1]);     //Motor 2
-    __HAL_TIM_SET_COMPARE(&htim15, TIM_CHANNEL_2, dutyCycle[2]);     //Motor 3
-    __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_1, dutyCycle[3]);     //Motor 4
-    __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_2, dutyCycle[4]);     //Motor 5
-    encoderCount[0] = __HAL_TIM_GET_COUNTER(&htim2);              //Motor 1
-    encoderCount[1] = __HAL_TIM_GET_COUNTER(&htim3);              //Motor 2
-    encoderCount[2] = __HAL_TIM_GET_COUNTER(&htim4);              //Motor 3
-    encoderCount[3] = __HAL_TIM_GET_COUNTER(&htim5);              //Motor 4
-    encoderCount[4] = __HAL_TIM_GET_COUNTER(&htim19);             //Motor 5
+    // __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, dutyCycle[0]);     //Motor 1
+    // __HAL_TIM_SET_COMPARE(&htim17, TIM_CHANNEL_1, dutyCycle[1]);     //Motor 2
+    // __HAL_TIM_SET_COMPARE(&htim15, TIM_CHANNEL_2, dutyCycle[2]);     //Motor 3
+    // __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_1, dutyCycle[3]);     //Motor 4
+    // __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_2, dutyCycle[4]);     //Motor 5
+    // encoderCount[0] = __HAL_TIM_GET_COUNTER(&htim2);              //Motor 1
+    // encoderCount[1] = __HAL_TIM_GET_COUNTER(&htim3);              //Motor 2
+    // encoderCount[2] = __HAL_TIM_GET_COUNTER(&htim4);              //Motor 3
+    // encoderCount[3] = __HAL_TIM_GET_COUNTER(&htim5);              //Motor 4
+    // encoderCount[4] = __HAL_TIM_GET_COUNTER(&htim19);             //Motor 5
     
-    // Debug output
-    debugPrint(&huart1, "Encoder Position: "); // print full line 
-    char out [64];
-    for (int i = 0; i < 5; i++){
-      out [6*i] = '0' + (encoderCount[i]/10000)%10;
-      out [6*i+1] = '0' + (encoderCount[i]/1000)%10;
-      out [6*i+2] = '0' + (encoderCount[i]/100)%10;
-      out [6*i+3] = '0' + (encoderCount[i]/10)%10;
-      out [6*i+4] = '0' + encoderCount[i]%10;
-      out [6*i+5] = ' ';
-    }
-    debugPrintln(&huart1, out); // print full line
+    // // Debug output
+    // debugPrint(&huart1, "Encoder Position: "); // print full line 
+    // char out [64];
+    // for (int i = 0; i < 5; i++){
+    //   out [6*i] = '0' + (encoderCount[i]/10000)%10;
+    //   out [6*i+1] = '0' + (encoderCount[i]/1000)%10;
+    //   out [6*i+2] = '0' + (encoderCount[i]/100)%10;
+    //   out [6*i+3] = '0' + (encoderCount[i]/10)%10;
+    //   out [6*i+4] = '0' + encoderCount[i]%10;
+    //   out [6*i+5] = ' ';
+    // }
+    // debugPrintln(&huart1, out); // print full line
+    serialPrint(&espUART, "Testing...\r\n");
 
-    osDelay(100);
+    osDelay(1000);
   }
   /* USER CODE END StartDefaultTask */
 }

@@ -58,7 +58,10 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
+#define espUART     huart1
 
+extern uint8_t uartRxBuffer[64];
+extern uint8_t uartTxBuffer[64];
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart1;
@@ -72,6 +75,15 @@ extern void _Error_Handler(char *, int);
 void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+
+/* Enable interupt when UART line is idle after RXNE event to detect end of data frame.
+Use with custom UART interupt handler to restart DMA after each data frame.
+Useful when incoming data frames have variable byte length. */
+#define UART_DMA_STOP_AT_IDLE(huart)    SET_BIT((huart).Instance->ICR, USART_ICR_IDLECF);\
+                                        SET_BIT((huart).Instance->CR1, USART_CR1_IDLEIE);  
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+void serialPrint(UART_HandleTypeDef *huart, char _out[]);
 
 /* USER CODE END Prototypes */
 

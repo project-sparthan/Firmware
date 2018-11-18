@@ -21,7 +21,7 @@ void setup() {
   digitalWrite(LED, HIGH);
   
   Serial.begin(115200);
-  sparthan.begin(3000000, SERIAL_8N1, 16, 17);
+  sparthan.begin(500000, SERIAL_8N1, 16, 17);
 }
 
 void loop() {  

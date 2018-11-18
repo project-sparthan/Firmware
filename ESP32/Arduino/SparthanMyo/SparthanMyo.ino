@@ -88,7 +88,7 @@ void setup()
   digitalWrite (LED, HIGH);                         // Turn ON
   delay(100);
   
-  sparthan.begin(3000000, SERIAL_8N1, 16, 17);      // Start sparthan communication
+  sparthan.begin(500000, SERIAL_8N1, 16, 17);      // Start sparthan communication
   delay(100);
   
   Serial.begin(115200);                             // Start serial interface for debugging
