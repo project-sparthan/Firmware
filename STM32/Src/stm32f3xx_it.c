@@ -39,8 +39,6 @@
 /* USER CODE BEGIN 0 */
 #include <string.h>
 
-extern uint8_t uartRxBuffer[64];
-
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -214,10 +212,7 @@ void USART1_IRQHandler(void)
   but stores correct data when a breakpoint is added on the DMAStop line,
   slow down UART data rate. */
   if (READ_BIT(huart1.Instance->ISR, USART_ISR_IDLE)) {
-    HAL_UART_DMAStop(&huart1);
-    HAL_UART_Receive_DMA(&huart1, uartRxBuffer, sizeof(uartRxBuffer));
-    SET_BIT(huart1.Instance->ICR, USART_ICR_IDLECF);
-    SET_BIT(huart1.Instance->CR1, USART_CR1_IDLEIE);
+    HAL_UART_Abort_IT(&huart1);
   } else {
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);

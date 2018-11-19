@@ -91,16 +91,7 @@ extern TIM_HandleTypeDef htim17;
 extern TIM_HandleTypeDef htim19;
 
 extern UART_HandleTypeDef huart1;
-
-extern uint8_t uartBuffer[64];
-
-// uint16_t encoderCount[5];
-
-/* Single byte to store input */
-// uint8_t byte;
-// uint16_t dutyCycle[5] = {0,0,0,0,0};
-// uint8_t direction = 0;
-
+extern osThreadId uartRxThreadHandle;
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
@@ -175,12 +166,14 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityLow, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
   
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  osThreadDef(uartRxThread, uartRxThreadFunction, osPriorityAboveNormal, 0, 256);
+  uartRxThreadHandle = osThreadCreate(osThread(uartRxThread), NULL);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -225,8 +218,7 @@ void StartDefaultTask(void const * argument)
   HAL_GPIO_WritePin(DIR4_GPIO_Port, DIR4_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(DIR5_GPIO_Port, DIR5_Pin, GPIO_PIN_SET);
 
-  UART_DMA_STOP_AT_IDLE(espUART);
-  HAL_UART_Receive_DMA(&espUART, uartRxBuffer, sizeof(uartRxBuffer));
+  UART_START_RX(&huart1);
 
   /* Infinite loop */
   for(;;)

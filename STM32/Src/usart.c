@@ -55,10 +55,13 @@
 
 /* USER CODE BEGIN 0 */
 
+#include "cmsis_os.h"
 #include <string.h>
 
 uint8_t uartRxBuffer[64];
-uint8_t uartTxBuffer[64];
+uint8_t uartRxProcessingBuffer[64];
+
+osThreadId uartRxThreadHandle;
 
 /* USER CODE END 0 */
 
@@ -187,7 +190,11 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 /* UART line idle detected, DMA UART receive operation has been stoped, restart now */
 void HAL_UART_AbortCpltCallback (UART_HandleTypeDef *huart) {
 
+  //notify receiver thread there's new data
+  osSignalSet(uartRxThreadHandle, UART_DATA_AVAILABLE);
+  //arm idle line interupt trigger
   UART_DMA_STOP_AT_IDLE(*huart);
+  //restart receiver
   HAL_UART_Receive_DMA(huart, uartRxBuffer, sizeof(uartRxBuffer));
 
 }
@@ -196,6 +203,20 @@ void HAL_UART_AbortCpltCallback (UART_HandleTypeDef *huart) {
 void serialPrint(UART_HandleTypeDef *huart, char _out[]) {
 
   HAL_UART_Transmit_DMA(huart, (uint8_t *) _out, strlen(_out));
+
+}
+
+void uartRxThreadFunction(void const * argument) {
+
+  while(1) {
+
+    osSignalWait(UART_DATA_AVAILABLE, osWaitForever);
+    ulTaskNotifyTake(pdTRUE, 0);
+    //xTaskNotifyStateClear(uartRxThreadHandle);
+    //osSignalClear(uartRxThreadHandle, UART_DATA_AVAILABLE);
+    osDelay(1);
+
+  }
 
 }
 

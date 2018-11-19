@@ -58,10 +58,13 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-#define espUART     huart1
+#include "cmsis_os.h"
+
+#define espUART               huart1
+#define UART_DATA_AVAILABLE   (int32_t) 1
 
 extern uint8_t uartRxBuffer[64];
-extern uint8_t uartTxBuffer[64];
+extern osThreadId uartRxThreadHandle;
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart1;
@@ -80,10 +83,13 @@ void MX_USART1_UART_Init(void);
 Use with custom UART interupt handler to restart DMA after each data frame.
 Useful when incoming data frames have variable byte length. */
 #define UART_DMA_STOP_AT_IDLE(huart)    SET_BIT((huart).Instance->ICR, USART_ICR_IDLECF);\
-                                        SET_BIT((huart).Instance->CR1, USART_CR1_IDLEIE);  
+                                        SET_BIT((huart).Instance->CR1, USART_CR1_IDLEIE); 
+
+#define UART_START_RX(huart)    HAL_UART_AbortCpltCallback(huart)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 void serialPrint(UART_HandleTypeDef *huart, char _out[]);
+void uartRxThreadFunction(void const * argument);
 
 /* USER CODE END Prototypes */
 
