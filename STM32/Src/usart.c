@@ -62,17 +62,25 @@
 uint8_t uartRxBuffer[RX_BUFFER_LENGTH];
 static uint8_t uartRxProcessingBuffer[RX_BUFFER_LENGTH];
 
+cmdCal_t calCmd;
+cmdMotorPos_t motorPosCmd;
+cmdMotorVel_t motorVelCmd;
+cmdMotorPower_t motorPwrCmd;
+
 static uint8_t sofPos	= 0;
 static uint8_t dataLength = 0;
 static uint8_t frameSeq = 0;
+static uint8_t frameID = 0;
 
 osThreadId uartRxThreadHandle;
-
-/* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
+
+static void* structGroup[UART_RX_DATA_TYPES + 1];
+
+/* USER CODE END 0 */
 
 /* USART1 init function */
 
@@ -377,12 +385,15 @@ void serialPrint(UART_HandleTypeDef *huart, char _out[]) {
 
 void uartRxThreadFunction(void const * argument) {
 
+  structGroup[FRAMEID_CMD_CAL] = &calCmd;
+  structGroup[FRAMEID_CMD_PWR] = &motorPwrCmd;
+  structGroup[FRAMEID_CMD_POS] = &motorPosCmd;
+  structGroup[FRAMEID_CMD_VEL] = &motorVelCmd;
+
   while(1) {
 
     osSignalWait(UART_DATA_AVAILABLE, osWaitForever);
     ulTaskNotifyTake(pdTRUE, 0);
-    //xTaskNotifyStateClear(uartRxThreadHandle);
-    //osSignalClear(uartRxThreadHandle, UART_DATA_AVAILABLE);
 
     taskENTER_CRITICAL();
     memcpy(uartRxProcessingBuffer, uartRxBuffer, RX_BUFFER_LENGTH);
@@ -392,13 +403,19 @@ void uartRxThreadFunction(void const * argument) {
       if (uartRxProcessingBuffer[sofPos] == START_OF_FRAME) {
         if (Verify_CRC8_Check_Sum(uartRxProcessingBuffer + sofPos, SIZE_FRAMEHEAD)) {
           if (Verify_CRC16_Check_Sum(uartRxProcessingBuffer + sofPos, SIZE_FRAMEHEAD + 
-          SIZE_FRAMEID + SIZE_FRAMETAIL + (uartRxProcessingBuffer[OFFSET_DATA_LENGTH] << 8 |
-          uartRxProcessingBuffer[OFFSET_DATA_LENGTH + 1]))) {
-            dataLength = uartRxProcessingBuffer[OFFSET_DATA_LENGTH] << 8 | 
-                         uartRxProcessingBuffer[OFFSET_DATA_LENGTH + 1];
+          SIZE_FRAMEID + SIZE_FRAMETAIL + (uartRxProcessingBuffer[OFFSET_DATA_LENGTH + sofPos] << 8 |
+          uartRxProcessingBuffer[OFFSET_DATA_LENGTH + sofPos + 1]))) {
+
+            dataLength = uartRxProcessingBuffer[OFFSET_DATA_LENGTH + sofPos] << 8 | 
+                         uartRxProcessingBuffer[OFFSET_DATA_LENGTH + sofPos + 1];
+            frameID = uartRxProcessingBuffer[OFFSET_DATA_TYPE + sofPos] << 8 | 
+                      uartRxProcessingBuffer[OFFSET_DATA_TYPE + sofPos + 1];
             frameSeq = uartRxProcessingBuffer[OFFSET_FRAME_SEQ];
-            //valid frame
             HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+            memcpy(structGroup[frameID], uartRxProcessingBuffer + sofPos + OFFSET_DATA_PAC, dataLength);
+
+            break;
+            
           }
         }
       }

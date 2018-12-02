@@ -63,6 +63,7 @@
 #define espUART               huart1
 #define RX_BUFFER_LENGTH	    64
 #define UART_DATA_AVAILABLE   (int32_t) 1
+#define UART_RX_DATA_TYPES	  (uint8_t) 4
 
 #define START_OF_FRAME	      (uint8_t) 0xA5
 
@@ -90,13 +91,34 @@
 extern uint8_t uartRxBuffer[64];
 extern osThreadId uartRxThreadHandle;
 
-typedef struct cmdMotorPower{
+typedef struct cmdCal_t{
+  float         currentThresh;
+  uint8_t       fullCal;
+}__attribute__((packed)) cmdCal_t;
+
+typedef struct cmdMotorPower_t{
   int32_t       motorPWM0;
   int32_t       motorPWM1;
   int32_t       motorPWM2;
   int32_t       motorPWM3;
   int32_t       motorPWM4;
-}__attribute__((packed)) cmdMotorPower;
+}__attribute__((packed)) cmdMotorPower_t;
+
+typedef struct cmdMotorVel_t{
+  float         motorVel0;
+  float         motorVel1;
+  float         motorVel2;
+  float         motorVel3;
+  float         motorVel4;
+}__attribute__((packed)) cmdMotorVel_t;
+
+typedef struct cmdMotorPos_t{
+  float         motorPos0;
+  float         motorPos1;
+  float         motorPos2;
+  float         motorPos3;
+  float         motorPos4;
+}__attribute__((packed)) cmdMotorPos_t;
 
 /* USER CODE END Includes */
 
