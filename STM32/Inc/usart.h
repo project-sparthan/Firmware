@@ -61,10 +61,43 @@
 #include "cmsis_os.h"
 
 #define espUART               huart1
+#define RX_BUFFER_LENGTH	    64
 #define UART_DATA_AVAILABLE   (int32_t) 1
+
+#define START_OF_FRAME	      (uint8_t) 0xA5
+
+#define OFFSET_SOF	          (uint8_t) 0
+#define OFFSET_DATA_LENGTH	  (uint8_t) 1
+#define OFFSET_FRAME_SEQ	    (uint8_t) 3
+#define OFFSET_CRC8	          (uint8_t) 4
+#define OFFSET_DATA_TYPE	    (uint8_t) 5
+#define OFFSET_DATA_PAC	      (uint8_t) 7
+
+#define SIZE_FRAMEHEAD	      (uint8_t) 5
+#define SIZE_FRAMEID	        (uint8_t) 2
+#define SIZE_FRAMETAIL	      (uint8_t) 2
+
+#define FRAMEID_CMD_CAL	      (uint16_t)  0x0001
+#define FRAMEID_CMD_PWR	      (uint16_t)  0x0002
+#define FRAMEID_CMD_POS	      (uint16_t)  0x0003
+#define FRAMEID_CMD_VEL	      (uint16_t)  0x0004
+
+#define FRAMEID_FB_CAL	      (uint16_t)  0x1001
+#define FRAMEID_FB_PWR	      (uint16_t)  0x1002
+#define FRAMEID_FB_POS	      (uint16_t)  0x1003
+#define FRAMEID_FB_VEL	      (uint16_t)  0x1004
 
 extern uint8_t uartRxBuffer[64];
 extern osThreadId uartRxThreadHandle;
+
+typedef struct cmdMotorPower{
+  int32_t       motorPWM0;
+  int32_t       motorPWM1;
+  int32_t       motorPWM2;
+  int32_t       motorPWM3;
+  int32_t       motorPWM4;
+}__attribute__((packed)) cmdMotorPower;
+
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart1;
