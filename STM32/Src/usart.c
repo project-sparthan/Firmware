@@ -330,7 +330,7 @@ uint32_t Verify_CRC16_Check_Sum(uint8_t  *pchMessage, uint32_t  dwLength) {
 
     uint16_t wExpected = 0;
     if ((pchMessage == NULL) || (dwLength <= 2)) {
-        return false;
+        return 0;
     }
     wExpected = Get_CRC16_Check_Sum ( pchMessage, dwLength - 2, CRC_INIT);
     return ((wExpected & 0xff) == pchMessage[dwLength - 2] && ((wExpected >> 8) & 0xff) == pchMessage[dwLength - 1]);
@@ -388,16 +388,17 @@ void uartRxThreadFunction(void const * argument) {
     memcpy(uartRxProcessingBuffer, uartRxBuffer, RX_BUFFER_LENGTH);
     taskEXIT_CRITICAL();
 
-    for (sofPos = 0; sofPos < RX_BUFFER_LENGTH, sofPos++) {
+    for (sofPos = 0; sofPos < RX_BUFFER_LENGTH; sofPos++) {
       if (uartRxProcessingBuffer[sofPos] == START_OF_FRAME) {
-        if (Verify_CRC8_Check_Sum(uartRxProcessingBuffer + sofPos, SIZE_FRAMEHEAD) {
+        if (Verify_CRC8_Check_Sum(uartRxProcessingBuffer + sofPos, SIZE_FRAMEHEAD)) {
           if (Verify_CRC16_Check_Sum(uartRxProcessingBuffer + sofPos, SIZE_FRAMEHEAD + 
           SIZE_FRAMEID + SIZE_FRAMETAIL + (uartRxProcessingBuffer[OFFSET_DATA_LENGTH] << 8 |
-          uartRxProcessingBuffer[OFFSET_DATA_LENGTH + 1])) {
+          uartRxProcessingBuffer[OFFSET_DATA_LENGTH + 1]))) {
             dataLength = uartRxProcessingBuffer[OFFSET_DATA_LENGTH] << 8 | 
                          uartRxProcessingBuffer[OFFSET_DATA_LENGTH + 1];
             frameSeq = uartRxProcessingBuffer[OFFSET_FRAME_SEQ];
             //valid frame
+            HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
           }
         }
       }

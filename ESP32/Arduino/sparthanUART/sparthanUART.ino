@@ -1,3 +1,5 @@
+#include <HardwareSerial.h>
+
 #define LED           32U
 #define BOOT          18U
 #define RST           19U
@@ -23,6 +25,8 @@
 #define FRAMEID_FB_PWR        (uint16_t)  0x1002
 #define FRAMEID_FB_POS        (uint16_t)  0x1003
 #define FRAMEID_FB_VEL        (uint16_t)  0x1004
+
+HardwareSerial sparthan(2);           // Needed since this is an ESP32
 
 uint8_t txBuffer[128];
 
@@ -190,20 +194,26 @@ void Append_CRC16_Check_Sum(uint8_t * pchMessage, uint32_t dwLength)
 }
 /**********************************  CRC END  ********************************/
 
-void uartSendBuffer(const void* data, const uint16_t dataSize, const void* dataType) {
+void uartSendBuffer(const void* data, const uint16_t dataSize, const uint16_t dataType) {
   static uint8_t txCount = 0;
   txCount++;
   memset(txBuffer, 0, sizeof(txBuffer));
   txBuffer[0] = START_OF_FRAME;
-  memcpy(txBuffer + OFFSET_DATA_LENGTH, &dataSize, sizeof(uint16_t));
+  //memcpy(txBuffer + OFFSET_DATA_LENGTH, &dataSize, sizeof(uint16_t));
+  txBuffer[1] = (uint8_t) dataSize >> 8;
+  txBuffer[2] = (uint8_t) dataSize;
   txBuffer[OFFSET_FRAME_SEQ] = txCount;
   Append_CRC8_Check_Sum(txBuffer, SIZE_FRAMEHEAD);
-  memcpy(txBuffer + OFFSET_DATA_TYPE, dataType, sizeof(uint16_t));
+  //memcpy(txBuffer + OFFSET_DATA_TYPE, dataType, sizeof(uint16_t));
+  txBuffer[5] = (uint8_t) dataType >> 8;
+  txBuffer[6] = (uint8_t) dataType;
   uint16_t currentSize = OFFSET_DATA_TYPE + sizeof(uint16_t);
   memcpy(txBuffer + currentSize, data, dataSize);
   currentSize += (dataSize);
   Append_CRC16_Check_Sum(txBuffer, currentSize + SIZE_FRAMETAIL);
-  Serial.println(currentSize + 2 * sizeof(uint8_t));
+  currentSize += 2;
+  Serial.println(currentSize * sizeof(uint8_t));
+  sparthan.write(txBuffer, currentSize);
 }
 
 void* uartReceiveBuffer(uint8_t* recBuffer) {
@@ -250,14 +260,16 @@ void setup() {
   pinMode(RST, INPUT);
 
   Serial.begin(115200);
+  sparthan.begin(500000, SERIAL_8N1, 16, 17);
+
 }
 
 void loop() {
 
   float data[] = {0.1, 0.2, 0.3, 0.4, 0.5}; // size -- 20
   int cmd = FRAMEID_CMD_VEL;
-  uartSendBuffer(data, sizeof(data), &cmd);
-  uartReceiveBuffer(txBuffer);
+  uartSendBuffer(data, sizeof(data), cmd);
+  //uartReceiveBuffer(txBuffer);
 
   digitalWrite(LED, LOW);
   delay(100);
