@@ -58,7 +58,7 @@
 /* USER CODE BEGIN Includes */     
 #include "stm32f3xx_hal.h"
 #include "usart.h"
-
+#include "motor.h"
 #include "string.h"
 #include <stdlib.h>
 /* USER CODE END Includes */
@@ -92,49 +92,13 @@ extern TIM_HandleTypeDef htim19;
 
 extern UART_HandleTypeDef huart1;
 extern osThreadId uartRxThreadHandle;
+extern osThreadId motorControlThreadHandle;
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
-/* Debugginf functions for the UART */
-// void debugPrint(UART_HandleTypeDef *huart, char _out[]){ 
-//   HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
-// }
-// void debugPrintln(UART_HandleTypeDef *huart, char _out[]){
-//        HAL_UART_Transmit(huart, (uint8_t *) _out, strlen(_out), 10);
-//        char newline[2] = "\r\n";
-//        HAL_UART_Transmit(huart, (uint8_t *) newline, 2, 10);
-// }
-
-// /* Set callback called by the HAL_UART_IRQHandler */
-// void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-// {
-//   if (huart->Instance == USART1)
-//   {
-//     /* Receive one byte in interrupt mode */ 
-//     HAL_UART_Receive_IT(&huart1, &byte, 1);
-//     if (byte == 's'){
-//       for (int i = 0; i<5; i++) 
-//         dutyCycle[i] = 65000;
-//       direction = 1;
-//     }
-//     else if (byte == 'n'){
-//       for (int i = 0; i<5; i++) 
-//         dutyCycle[i] = 65000;   
-//       direction = 0;
-//       debugPrintln(&huart1, "OK");
-//     }
-//     else if (byte == 't'){
-//       for (int i = 0; i<5; i++) 
-//         dutyCycle[i] = 0;    
-//       debugPrintln(&huart1, "OK");
-//     }
-//   }
-// }
-
 
 /* USER CODE END FunctionPrototypes */
 
@@ -166,12 +130,15 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityLow, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  // osThreadDef(defaultTask, StartDefaultTask, osPriorityLow, 0, 128);
+  // defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
   
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  osThreadDef(motorThread, motorControlThreadFunction, osPriorityNormal, 0, 256);
+  motorControlThreadHandle = osThreadCreate(osThread(motorThread), NULL);
+
   osThreadDef(uartRxThread, uartRxThreadFunction, osPriorityAboveNormal, 0, 256);
   uartRxThreadHandle = osThreadCreate(osThread(uartRxThread), NULL);
   /* USER CODE END RTOS_THREADS */
@@ -197,34 +164,33 @@ void StartDefaultTask(void const * argument)
   // HAL_UART_Receive_IT(&huart1, &byte, 1);
 
   /* Initialize encoder and motors */
-  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
-  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_2);
-  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_2);
-  HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_2);
-  HAL_TIM_Encoder_Start(&htim19, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim19, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim17, TIM_CHANNEL_1);
-  HAL_GPIO_WritePin(DIR1_GPIO_Port, DIR1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(DIR2_GPIO_Port, DIR2_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(DIR3_GPIO_Port, DIR3_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(DIR4_GPIO_Port, DIR4_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(DIR5_GPIO_Port, DIR5_Pin, GPIO_PIN_SET);
+  // HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
+  // HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
+  // HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
+  // HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_2);
+  // HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1);
+  // HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_2);
+  // HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_1);
+  // HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_2);
+  // HAL_TIM_Encoder_Start(&htim19, TIM_CHANNEL_1);
+  // HAL_TIM_Encoder_Start(&htim19, TIM_CHANNEL_2);
+  // HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
+  // HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
+  // HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_2);
+  // HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+  // HAL_TIM_PWM_Start(&htim17, TIM_CHANNEL_1);
+  // HAL_GPIO_WritePin(DIR1_GPIO_Port, DIR1_Pin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(DIR2_GPIO_Port, DIR2_Pin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(DIR3_GPIO_Port, DIR3_Pin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(DIR4_GPIO_Port, DIR4_Pin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(DIR5_GPIO_Port, DIR5_Pin, GPIO_PIN_SET);
 
-  UART_START_RX(&huart1);
 
   /* Infinite loop */
   for(;;)
   {
     
-    // HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
     // HAL_GPIO_WritePin(DIR1_GPIO_Port, DIR1_Pin, direction);
     // HAL_GPIO_WritePin(DIR2_GPIO_Port, DIR2_Pin, direction);
     // HAL_GPIO_WritePin(DIR3_GPIO_Port, DIR3_Pin, direction);
@@ -254,7 +220,7 @@ void StartDefaultTask(void const * argument)
     //   out [6*i+5] = ' ';
     // }
     // debugPrintln(&huart1, out); // print full line
-    serialPrint(&espUART, "Testing...\r\n");
+    //serialPrint(&espUART, "Testing...\r\n");
 
     osDelay(1000);
   }

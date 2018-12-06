@@ -267,7 +267,7 @@ void setup() {
 void loop() {
 
   float data[] = {0.1, 0.2, 0.3, 0.4, 0.5}; // size -- 20
-  int cmd = FRAMEID_CMD_VEL;
+  int cmd = FRAMEID_CMD_POS;
   uartSendBuffer(data, sizeof(data), cmd);
   //uartReceiveBuffer(txBuffer);
 

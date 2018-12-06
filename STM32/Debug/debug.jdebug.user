@@ -1,19 +1,44 @@
-OpenDocument="main.c", FilePath="C:\GCC_STM\Firmware\STM32\Src\main.c", Line=0
-OpenDocument="tasks.c", FilePath="C:\GCC_STM\Firmware\STM32\Middlewares/Third_Party/FreeRTOS/Source\tasks.c", Line=3367
+Breakpoint=main.c:133, State=BP_STATE_DISABLED
+Breakpoint=freertos.c:139, State=BP_STATE_DISABLED
+GraphedExpression="motors[0].encCountTotal", DisplayFormat=DISPLAY_FORMAT_DEC
+GraphedExpression="motors[1].encCountTotal", DisplayFormat=DISPLAY_FORMAT_DEC
+OpenDocument="startup_stm32f373xc.s", FilePath="C:\GCC_STM\Firmware\STM32\startup_stm32f373xc.s", Line=65
+OpenDocument="main.c", FilePath="C:\GCC_STM\Firmware\STM32\Src\main.c", Line=79
+OpenDocument="port.c", FilePath="C:\GCC_STM\Firmware\STM32\Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F\port.c", Line=415
+OpenDocument="heap_4.c", FilePath="C:\GCC_STM\Firmware\STM32\Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang\heap_4.c", Line=179
+OpenDocument="cmsis_os.c", FilePath="C:\GCC_STM\Firmware\STM32\Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\cmsis_os.c", Line=183
+OpenDocument="sdadc.c", FilePath="C:\GCC_STM\Firmware\STM32\Src\sdadc.c", Line=60
+OpenDocument="freertos.c", FilePath="C:\GCC_STM\Firmware\STM32\Src\freertos.c", Line=122
+OpenDocument="motor.c", FilePath="C:\GCC_STM\Firmware\STM32\Src\motor.c", Line=19
+OpenDocument="dma.c", FilePath="C:\GCC_STM\Firmware\STM32\Src\dma.c", Line=51
+OpenDocument="tasks.c", FilePath="C:\GCC_STM\Firmware\STM32\Middlewares/Third_Party/FreeRTOS/Source\tasks.c", Line=3155
+OpenDocument="portmacro.h", FilePath="C:\GCC_STM\Firmware\STM32\Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F\portmacro.h", Line=226
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=524, h=271, FilterBarShown=1
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=631, h=268, FilterBarShown=0, ExecCountersShown=0
+OpenWindow="Call Stack", DockArea=RIGHT, x=0, y=0, w=621, h=304, FilterBarShown=0
+OpenWindow="Source Files", DockArea=LEFT, x=0, y=0, w=263, h=304, FilterBarShown=1
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=621, h=304, FilterBarShown=0, ExecCountersShown=0
 OpenWindow="Source", x=0, y=0, w=0, h=0, FilterBarShown=0, ExecCountersShown=0
-OpenWindow="Global Data", DockArea=RIGHT, x=0, y=0, w=631, h=268, FilterBarShown=1
-OpenWindow="Watched Data", DockArea=RIGHT, x=0, y=1, w=631, h=269, FilterBarShown=0
-OpenWindow="Functions", DockArea=LEFT, x=0, y=1, w=524, h=282, FilterBarShown=1
-OpenWindow="Memory Usage", DockArea=RIGHT, x=0, y=0, w=631, h=268, FilterBarShown=0
-OpenWindow="Data Graph", DockArea=BOTTOM, x=1, y=0, w=809, h=396, FilterBarShown=0, VisibleTab=1, SamplingFreq=1 kHz, ClearEvent=RESUME
-OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=1110, h=396, FilterBarShown=0
-TableHeader="Global Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type"], ColWidths=[105;114;114;66;215]
+OpenWindow="Break & Tracepoints", DockArea=LEFT, x=0, y=0, w=263, h=304, FilterBarShown=0
+OpenWindow="Global Data", DockArea=RIGHT, x=0, y=0, w=621, h=304, FilterBarShown=1
+OpenWindow="Watched Data", DockArea=RIGHT, x=0, y=1, w=621, h=320, FilterBarShown=0
+OpenWindow="Functions", DockArea=LEFT, x=0, y=1, w=263, h=320, FilterBarShown=1
+OpenWindow="Memory Usage", DockArea=RIGHT, x=0, y=0, w=621, h=304, FilterBarShown=0
+OpenWindow="Data Graph", DockArea=BOTTOM, x=1, y=0, w=989, h=303, FilterBarShown=0, VisibleTab=1, SamplingFreq=1 kHz, ClearEvent=RESUME
+OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=930, h=319, FilterBarShown=0
+OpenWindow="Tasks", DockArea=BOTTOM, x=1, y=0, w=989, h=303, FilterBarShown=0
+TableHeader="Tasks", SortCol="None", SortOrder="ASCENDING", VisibleCols=["ID";"Priority";"Name";"Status";"Timeout";"Notify Value";"Notify State";"Stack Info (Free / Size)";"Run Count";"Mutex Count"], ColWidths=[92;80;86;80;56;69;70;123;63;270]
+TableHeader="DataGraphSamples", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time                    ";" motors[0].encCountTotal";" motors[1].encCountTotal"], ColWidths=[152;77;58;120]
+TableHeader="Data Graph", SortCol="Expression", SortOrder="DESCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[152;77;77;112;105;91;78;98;375]
+TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[178;66;54;66;310]
+TableHeader="Break & Tracepoints", SortCol="None", SortOrder="ASCENDING", VisibleCols=["";"Type";"Location";"Extras"], ColWidths=[38;71;97;57]
+TableHeader="Call Stack", SortCol="Function", SortOrder="ASCENDING", VisibleCols=["Function";"Stack Info";"Source";"PC";"Return Address"], ColWidths=[149;109;84;83;196]
+TableHeader="Global Data", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Location";"Size";"Type"], ColWidths=[105;114;114;66;205]
 TableHeader="Watched Data", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Size";"Refresh";"Type"], ColWidths=[126;114;114;66;91;215]
 TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[235;81;48;53;100]
-TableHeader="Source Files", SortCol="File", SortOrder="ASCENDING", VisibleCols=["File";"Status";"Size";"#Insts";"Path"], ColWidths=[178;66;54;66;310]
-TableHeader="DataGraphSamples", SortCol="Index", SortOrder="ASCENDING", VisibleCols=["Index";"Time                    "], ColWidths=[146;48]
-TableHeader="Data Graph", SortCol="Expression", SortOrder="DESCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[146;48;77;63;77;91;78;98;345]
 TableHeader="tableWidgetSamples", SortCol="Index", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Channel 0"], ColWidths=[72;102;108]
+WatchedExpression="uartRxProcessingBuffer"
+WatchedExpression="motorVelCmd", RefreshRate=5
+WatchedExpression="pwmPeriod", RefreshRate=5
+WatchedExpression="motors", RefreshRate=5
+WatchedExpression="motorPosCmd", RefreshRate=5
+WatchedExpression="pids", RefreshRate=5

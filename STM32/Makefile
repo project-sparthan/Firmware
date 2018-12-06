@@ -72,7 +72,8 @@ Middlewares/Third_Party/FreeRTOS/Source/timers.c \
 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
 Src/stm32f3xx_hal_timebase_TIM.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
-Src/dma.c
+Src/dma.c \
+Src/motor.c 
 
 # ASM sources
 ASM_SOURCES =  \

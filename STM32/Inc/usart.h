@@ -89,6 +89,7 @@
 #define FRAMEID_FB_VEL	      (uint16_t)  0x1004
 
 extern uint8_t uartRxBuffer[64];
+extern uint8_t frameID;
 extern osThreadId uartRxThreadHandle;
 
 typedef struct cmdCal_t{
@@ -125,6 +126,11 @@ typedef struct cmdMotorPos_t{
 extern UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN Private defines */
+
+extern cmdCal_t calCmd;
+extern float motorPosCmd[5];
+extern float motorVelCmd[5];
+extern int32_t motorPwrCmd[5];
 
 /* USER CODE END Private defines */
 

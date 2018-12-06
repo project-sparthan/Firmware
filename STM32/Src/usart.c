@@ -63,14 +63,14 @@ uint8_t uartRxBuffer[RX_BUFFER_LENGTH];
 static uint8_t uartRxProcessingBuffer[RX_BUFFER_LENGTH];
 
 cmdCal_t calCmd;
-cmdMotorPos_t motorPosCmd;
-cmdMotorVel_t motorVelCmd;
-cmdMotorPower_t motorPwrCmd;
+float motorPosCmd[5];
+float motorVelCmd[5];
+int32_t motorPwrCmd[5];
 
 static uint8_t sofPos	= 0;
 static uint8_t dataLength = 0;
 static uint8_t frameSeq = 0;
-static uint8_t frameID = 0;
+uint8_t frameID = 0;
 
 osThreadId uartRxThreadHandle;
 
@@ -390,6 +390,8 @@ void uartRxThreadFunction(void const * argument) {
   structGroup[FRAMEID_CMD_POS] = &motorPosCmd;
   structGroup[FRAMEID_CMD_VEL] = &motorVelCmd;
 
+  UART_START_RX(&huart1);   //init UART RX process
+
   while(1) {
 
     osSignalWait(UART_DATA_AVAILABLE, osWaitForever);
@@ -415,7 +417,7 @@ void uartRxThreadFunction(void const * argument) {
             memcpy(structGroup[frameID], uartRxProcessingBuffer + sofPos + OFFSET_DATA_PAC, dataLength);
 
             break;
-            
+
           }
         }
       }
