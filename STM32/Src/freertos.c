@@ -129,11 +129,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  // osThreadDef(defaultTask, StartDefaultTask, osPriorityLow, 0, 128);
-  // defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-  
-
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   osThreadDef(motorThread, motorControlThreadFunction, osPriorityNormal, 0, 256);
@@ -146,85 +141,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
-}
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used 
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
-{
-
-  /* USER CODE BEGIN StartDefaultTask */
-
-  // /* Setup interrupt routine for USART communication */
-  // HAL_UART_Receive_IT(&huart1, &byte, 1);
-
-  /* Initialize encoder and motors */
-  // HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
-  // HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
-  // HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
-  // HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_2);
-  // HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1);
-  // HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_2);
-  // HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_1);
-  // HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_2);
-  // HAL_TIM_Encoder_Start(&htim19, TIM_CHANNEL_1);
-  // HAL_TIM_Encoder_Start(&htim19, TIM_CHANNEL_2);
-  // HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
-  // HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
-  // HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_2);
-  // HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
-  // HAL_TIM_PWM_Start(&htim17, TIM_CHANNEL_1);
-  // HAL_GPIO_WritePin(DIR1_GPIO_Port, DIR1_Pin, GPIO_PIN_SET);
-  // HAL_GPIO_WritePin(DIR2_GPIO_Port, DIR2_Pin, GPIO_PIN_SET);
-  // HAL_GPIO_WritePin(DIR3_GPIO_Port, DIR3_Pin, GPIO_PIN_SET);
-  // HAL_GPIO_WritePin(DIR4_GPIO_Port, DIR4_Pin, GPIO_PIN_SET);
-  // HAL_GPIO_WritePin(DIR5_GPIO_Port, DIR5_Pin, GPIO_PIN_SET);
-
-
-  /* Infinite loop */
-  for(;;)
-  {
-    
-    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-    // HAL_GPIO_WritePin(DIR1_GPIO_Port, DIR1_Pin, direction);
-    // HAL_GPIO_WritePin(DIR2_GPIO_Port, DIR2_Pin, direction);
-    // HAL_GPIO_WritePin(DIR3_GPIO_Port, DIR3_Pin, direction);
-    // HAL_GPIO_WritePin(DIR4_GPIO_Port, DIR4_Pin, direction);
-    // HAL_GPIO_WritePin(DIR5_GPIO_Port, DIR5_Pin, direction);
-
-    // __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, dutyCycle[0]);     //Motor 1
-    // __HAL_TIM_SET_COMPARE(&htim17, TIM_CHANNEL_1, dutyCycle[1]);     //Motor 2
-    // __HAL_TIM_SET_COMPARE(&htim15, TIM_CHANNEL_2, dutyCycle[2]);     //Motor 3
-    // __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_1, dutyCycle[3]);     //Motor 4
-    // __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_2, dutyCycle[4]);     //Motor 5
-    // encoderCount[0] = __HAL_TIM_GET_COUNTER(&htim2);              //Motor 1
-    // encoderCount[1] = __HAL_TIM_GET_COUNTER(&htim3);              //Motor 2
-    // encoderCount[2] = __HAL_TIM_GET_COUNTER(&htim4);              //Motor 3
-    // encoderCount[3] = __HAL_TIM_GET_COUNTER(&htim5);              //Motor 4
-    // encoderCount[4] = __HAL_TIM_GET_COUNTER(&htim19);             //Motor 5
-    
-    // // Debug output
-    // debugPrint(&huart1, "Encoder Position: "); // print full line 
-    // char out [64];
-    // for (int i = 0; i < 5; i++){
-    //   out [6*i] = '0' + (encoderCount[i]/10000)%10;
-    //   out [6*i+1] = '0' + (encoderCount[i]/1000)%10;
-    //   out [6*i+2] = '0' + (encoderCount[i]/100)%10;
-    //   out [6*i+3] = '0' + (encoderCount[i]/10)%10;
-    //   out [6*i+4] = '0' + encoderCount[i]%10;
-    //   out [6*i+5] = ' ';
-    // }
-    // debugPrintln(&huart1, out); // print full line
-    //serialPrint(&espUART, "Testing...\r\n");
-
-    osDelay(1000);
-  }
-  /* USER CODE END StartDefaultTask */
 }
 
 /* Private application code --------------------------------------------------*/

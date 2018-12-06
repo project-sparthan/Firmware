@@ -97,30 +97,6 @@ typedef struct cmdCal_t{
   uint8_t       fullCal;
 }__attribute__((packed)) cmdCal_t;
 
-typedef struct cmdMotorPower_t{
-  int32_t       motorPWM0;
-  int32_t       motorPWM1;
-  int32_t       motorPWM2;
-  int32_t       motorPWM3;
-  int32_t       motorPWM4;
-}__attribute__((packed)) cmdMotorPower_t;
-
-typedef struct cmdMotorVel_t{
-  float         motorVel0;
-  float         motorVel1;
-  float         motorVel2;
-  float         motorVel3;
-  float         motorVel4;
-}__attribute__((packed)) cmdMotorVel_t;
-
-typedef struct cmdMotorPos_t{
-  float         motorPos0;
-  float         motorPos1;
-  float         motorPos2;
-  float         motorPos3;
-  float         motorPos4;
-}__attribute__((packed)) cmdMotorPos_t;
-
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart1;

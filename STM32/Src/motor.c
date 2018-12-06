@@ -5,10 +5,10 @@
 #include "motor.h"
 #include <string.h>
 
-#define ENCODER_MAX_COUNT			65535
-#define GEAR_REDUCTION				298
+#define ENCODER_MAX_COUNT			65535		//basically size of timer register
+#define GEAR_REDUCTION				298			//n20 motor with 1:298 gear reduction
 #define ROLLER_DIAMETER				0.006		//meters, aprox number
-#define ENCODER_CNT_PER_REV		7
+#define ENCODER_CNT_PER_REV		7 			//on the motor spindle, one rev gives 7 encoder pulses
 
 osThreadId motorControlThreadHandle;
 extern float motorPosCmd[5];
@@ -47,20 +47,6 @@ static uint8_t abs_limit(float *a, float ABS_MAX)
 
 }
 
-// static uint8_t maxed(float a, float ABS_MAX)
-// {
-//   if (a > ABS_MAX) {
-// 	  return 1;
-//   }
-
-//   if (a < -ABS_MAX){
-// 	 return 1;
-//   }
-
-//   return 0;
-
-// }
-
 void motorInit(motor_t* motor) {
 
 	HAL_TIM_Encoder_Start(motor->encTim, TIM_CHANNEL_ALL);
@@ -84,7 +70,7 @@ void motorSetPwm(motor_t* motor, float pwmSet) {
 
 void motorControlThreadFunction(void const* argument) {
 
-	motors[0].dirPort = DIR5_GPIO_Port;
+	motors[0].dirPort = DIR5_GPIO_Port;		//mapping the motors from mechanical order to electrical connections
 	motors[0].dirPin = DIR5_Pin;
 	motors[0].encTim = &htim19;
 	motors[0].pwmTim = &htim12;
@@ -130,13 +116,14 @@ void motorControlThreadFunction(void const* argument) {
 
 		for(uint8_t i = 0; i < 5; i++) {
 
+			//update encoder data
 			motors[i].encCountRaw = __HAL_TIM_GET_COUNTER(motors[i].encTim);
 			if 			(motors[i].encCountRaw - motors[i].encCountPrev > ENCODER_MAX_COUNT / 2) motors[i].encCountRound--;
 			else if (motors[i].encCountRaw - motors[i].encCountPrev < -ENCODER_MAX_COUNT / 2) motors[i].encCountRound++;
 			motors[i].encCountTotal = motors[i].encCountRaw + motors[i].encCountRound * ENCODER_MAX_COUNT;
-			//motors[i].encCountTotal = -motors[i].encCountTotal;
 			motors[i].encCountPrev = motors[i].encCountRaw;
 
+			//calc PID
 			pids[i].setPoint = motorPosCmd[i] * motors[i].encMeterToCount;
 			uint8_t maxed = 0;
 			pids[i].error = pids[i].setPoint + motors[i].encCountTotal;
@@ -157,33 +144,3 @@ void motorControlThreadFunction(void const* argument) {
   }
 
 }
-
-
-/*
-
-if      (cm->raw_angle - cm->last_raw_angle >  CAN_ENCODER_RANGE / 2) cm->round_count--;
-else if (cm->raw_angle - cm->last_raw_angle < -CAN_ENCODER_RANGE / 2) cm->round_count++;
-
-void driveCloseLoop(void) {  
-
-  for (uint8_t i = 0 ; i < 4 ; i++) {
-
-  	uint8_t maxed = 0;
-  	wheelPID[i].error = posCommand - chassisData[i].total_ecd;
-  	wheelPID[i].P = kP * wheelPID[i].error;
-  	wheelPID[i].D = kD * (wheelPID[i].error - wheelPID[i].lastError);
-
-  	currentCommand[i] = wheelPID[i].P + wheelPID[i].D + (wheelPID[i].I * kI);
-  	maxed = abs_limit(&currentCommand[i], maxCurrent);
-
-  	wheelPID[i].I = maxed ? 0: wheelPID[i].error + wheelPID[i].I;
-  	abs_limit(&wheelPID[i].I, maxI);
-
-  	wheelPID[i].lastError = wheelPID[i].error;
-
-  }
-
-}
-
-
-*/
